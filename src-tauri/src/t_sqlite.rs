@@ -4754,6 +4754,216 @@ impl AGpsHeatPoint {
     }
 }
 
+/// A single day's photo/video count, used to render the dashboard timeline heatmap.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ATimelineDay {
+    pub date: String, // YYYY-MM-DD (local time)
+    pub count: i64,
+}
+
+/// Aggregated count and total size for a file format (e.g. JPEG, RAW, MP4).
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AFormatStat {
+    pub label: String,
+    pub count: i64,
+    pub size: i64,
+}
+
+/// Aggregated count and total size for an album, used for storage usage.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AAlbumStat {
+    pub name: String,
+    pub count: i64,
+    pub size: i64,
+}
+
+/// Aggregated photo count for a camera/lens make+model combination.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AMakeModelStat {
+    pub make: String,
+    pub model: String,
+    pub count: i64,
+}
+
+/// All data needed to render the dashboard in a single call.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ADashboardStats {
+    pub total_count: i64,
+    pub total_size: i64,
+    pub years: Vec<i64>,
+    pub selected_year: i64,
+    pub timeline: Vec<ATimelineDay>,
+    pub formats: Vec<AFormatStat>,
+    pub albums: Vec<AAlbumStat>,
+    pub cameras: Vec<AMakeModelStat>,
+    pub lenses: Vec<AMakeModelStat>,
+}
+
+impl ADashboardStats {
+    /// Gather all dashboard statistics in one connection. `year` selects the
+    /// year shown in the timeline heatmap; pass 0 to use the most recent year
+    /// with photos.
+    pub fn get_from_db(year: i64) -> Result<Self, String> {
+        let conn = open_conn()?;
+        let exclusion = AFile::search_exclusion_condition("b");
+
+        let (total_count, total_size) = {
+            let sql = format!(
+                "SELECT COUNT(*), SUM(a.size)
+                 FROM afiles a
+                 LEFT JOIN afolders b ON a.folder_id = b.id
+                 WHERE {}",
+                exclusion
+            );
+            conn.query_row(&sql, params![], |row| {
+                let count: i64 = row.get(0)?;
+                let size: i64 = row.get(1).unwrap_or(0);
+                Ok((count, size))
+            })
+            .map_err(|e| e.to_string())?
+        };
+
+        let years: Vec<i64> = {
+            let sql = format!(
+                "SELECT DISTINCT CAST(strftime('%Y', a.taken_date, 'unixepoch', 'localtime') AS INTEGER) AS y
+                 FROM afiles a
+                 LEFT JOIN afolders b ON a.folder_id = b.id
+                 WHERE a.taken_date IS NOT NULL AND a.taken_date >= 86400 AND {}
+                 ORDER BY y DESC",
+                exclusion
+            );
+            let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
+            stmt.query_map(params![], |row| row.get(0))
+                .map_err(|e| e.to_string())?
+                .filter_map(|r| r.ok())
+                .collect()
+        };
+
+        let selected_year = if year > 0 {
+            year
+        } else {
+            years.first().copied().unwrap_or(0)
+        };
+
+        let timeline: Vec<ATimelineDay> = {
+            let sql = format!(
+                "SELECT strftime('%Y-%m-%d', a.taken_date, 'unixepoch', 'localtime') AS day, COUNT(*)
+                 FROM afiles a
+                 LEFT JOIN afolders b ON a.folder_id = b.id
+                 WHERE a.taken_date IS NOT NULL AND a.taken_date >= 86400 AND {}
+                 AND CAST(strftime('%Y', a.taken_date, 'unixepoch', 'localtime') AS INTEGER) = ?
+                 GROUP BY day",
+                exclusion
+            );
+            let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
+            stmt.query_map(params![selected_year], |row| {
+                Ok(ATimelineDay {
+                    date: row.get(0)?,
+                    count: row.get(1)?,
+                })
+            })
+            .map_err(|e| e.to_string())?
+            .filter_map(|r| r.ok())
+            .collect()
+        };
+
+        let formats: Vec<AFormatStat> = {
+            let sql = format!(
+                "SELECT COALESCE(a.format_label, '?') AS label, COUNT(*), SUM(a.size)
+                 FROM afiles a
+                 LEFT JOIN afolders b ON a.folder_id = b.id
+                 WHERE {}
+                 GROUP BY label
+                 ORDER BY COUNT(*) DESC",
+                exclusion
+            );
+            let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
+            stmt.query_map(params![], |row| {
+                Ok(AFormatStat {
+                    label: row.get(0)?,
+                    count: row.get(1)?,
+                    size: row.get(2).unwrap_or(0),
+                })
+            })
+            .map_err(|e| e.to_string())?
+            .filter_map(|r| r.ok())
+            .collect()
+        };
+
+        let albums: Vec<AAlbumStat> = {
+            let sql = format!(
+                "SELECT c.name, COUNT(*), SUM(a.size)
+                 FROM afiles a
+                 LEFT JOIN afolders b ON a.folder_id = b.id
+                 LEFT JOIN albums c ON b.album_id = c.id
+                 WHERE {}
+                 GROUP BY c.id
+                 ORDER BY SUM(a.size) DESC",
+                exclusion
+            );
+            let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
+            stmt.query_map(params![], |row| {
+                Ok(AAlbumStat {
+                    name: row.get::<_, Option<String>>(0)?.unwrap_or_default(),
+                    count: row.get(1)?,
+                    size: row.get(2).unwrap_or(0),
+                })
+            })
+            .map_err(|e| e.to_string())?
+            .filter_map(|r| r.ok())
+            .collect()
+        };
+
+        let cameras = Self::get_make_model_stats(&conn, &exclusion, "e_make", "e_model")?;
+        let lenses = Self::get_make_model_stats(&conn, &exclusion, "e_lens_make", "e_lens_model")?;
+
+        Ok(Self {
+            total_count,
+            total_size,
+            years,
+            selected_year,
+            timeline,
+            formats,
+            albums,
+            cameras,
+            lenses,
+        })
+    }
+
+    fn get_make_model_stats(
+        conn: &Connection,
+        exclusion: &str,
+        make_col: &str,
+        model_col: &str,
+    ) -> Result<Vec<AMakeModelStat>, String> {
+        let sql = format!(
+            "SELECT COALESCE(a.{make_col}, ''), a.{model_col}, COUNT(*)
+             FROM afiles a
+             LEFT JOIN afolders b ON a.folder_id = b.id
+             WHERE a.{model_col} IS NOT NULL AND a.{model_col} <> '' AND {exclusion}
+             GROUP BY a.{make_col}, a.{model_col}
+             ORDER BY COUNT(*) DESC
+             LIMIT 10",
+            make_col = make_col,
+            model_col = model_col,
+            exclusion = exclusion,
+        );
+        let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
+        let stats = stmt
+            .query_map(params![], |row| {
+                Ok(AMakeModelStat {
+                    make: row.get(0)?,
+                    model: row.get(1)?,
+                    count: row.get(2)?,
+                })
+            })
+            .map_err(|e| e.to_string())?
+            .filter_map(|r| r.ok())
+            .collect();
+        Ok(stats)
+    }
+}
+
 /// get connection to the db
 static CONN_POOL: Mutex<Vec<(String, Connection)>> = Mutex::new(Vec::new());
 

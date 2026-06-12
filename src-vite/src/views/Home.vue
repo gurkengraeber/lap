@@ -137,6 +137,7 @@
         ]"
       >
         <MapHeatmapView v-if="config.main.sidebarIndex === MAP_SIDEBAR_INDEX" />
+        <DashboardView v-else-if="config.main.sidebarIndex === DASHBOARD_SIDEBAR_INDEX" />
         <Content v-else ref="contentRef" :key="libraryVersion" :titlebar="buttons[config.main.sidebarIndex].text" :libraryEmpty="libraryEmpty"/>
       </div>
     </div>
@@ -181,6 +182,7 @@ import Location from '@/components/Location.vue';
 import Person from '@/components/Person.vue';
 import Camera from '@/components/Camera.vue';
 import MapHeatmapView from '@/components/MapHeatmapView.vue';
+import DashboardView from '@/components/DashboardView.vue';
 import TitleBar from '@/components/TitleBar.vue';
 import TButton from '@/components/TButton.vue';
 import Content from '@/components/Content.vue';
@@ -202,6 +204,7 @@ import {
   IconCalendarDay,
   IconPhotoAll,
   IconMapDefault,
+  IconChartBar,
 } from '@/common/icons';
 
 const isSwitchingLibrary = ref(false);
@@ -337,10 +340,13 @@ const buttons = computed(() =>  [
   { icon: IconLocation, component: Location, text: localeMsg.value.sidebar.location },
   { icon: IconCameraAperture, component: Camera, text: localeMsg.value.sidebar.camera },
   { icon: IconMapDefault, component: null, text: localeMsg.value.sidebar.map },
+  { icon: IconChartBar, component: null, text: localeMsg.value.sidebar.dashboard },
 ]);
 
 // dedicated full-area heatmap view, shown instead of Content
 const MAP_SIDEBAR_INDEX = 8;
+// dedicated full-area dashboard view, shown instead of Content
+const DASHBOARD_SIDEBAR_INDEX = 9;
 
 const visibleButtons = computed(() =>
   buttons.value
@@ -544,8 +550,8 @@ const onManageLibrariesUpdated = async () => {
 // click sidebar
 function clickSidebar(index: number) {
   if (libraryEmpty.value && index !== 0) return;
-  if (index === MAP_SIDEBAR_INDEX) {
-    // map view has no filter panel - give it the full content area
+  if (index === MAP_SIDEBAR_INDEX || index === DASHBOARD_SIDEBAR_INDEX) {
+    // these views have no filter panel - give them the full content area
     showPanel.value = false;
     config.main.sidebarIndex = index;
     return;

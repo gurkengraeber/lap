@@ -1339,6 +1339,14 @@ pub fn get_gps_heatmap_points() -> Result<Vec<t_sqlite::AGpsHeatPoint>, String> 
         .map_err(|e| format!("Error while getting GPS heatmap points: {}", e))
 }
 
+/// get aggregated statistics for the dashboard view (year selects the
+/// timeline heatmap year; pass 0 for the most recent year with photos)
+#[tauri::command]
+pub fn get_dashboard_stats(year: i64) -> Result<t_sqlite::ADashboardStats, String> {
+    t_sqlite::ADashboardStats::get_from_db(year)
+        .map_err(|e| format!("Error while getting dashboard stats: {}", e))
+}
+
 // settings
 
 /// get package info

@@ -10,7 +10,8 @@
     "people": "People",
     "camera": "Cameras",
     "map": "Map",
-    "settings": "Settings"
+    "settings": "Settings",
+    "dashboard": "Dashboard"
   },
   "album": {
     "all_files": "All files",
@@ -311,7 +312,8 @@
       "person": "No people found",
       "person_hint": "Index faces in Albums to see people here",
       "camera": "No cameras found",
-      "camera_hint": "Add photos with camera metadata to see them here"
+      "camera_hint": "Add photos with camera metadata to see them here",
+      "data": "No data available"
     },
     "set_album_cover": {
       "success": "Album cover set successfully",
@@ -763,6 +765,19 @@
     "no_photos_in_view": "No photos in this area",
     "photos_in_view": "{count} photos in this area",
     "photos_in_view_limited": "Showing first {count} photos - zoom in for more"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "total_items": "Photos & Videos",
+    "total_size": "Storage",
+    "timeline": "Timeline",
+    "geo_heatmap": "Geo Heatmap",
+    "formats": "File Formats",
+    "storage_by_album": "Storage by Album",
+    "top_cameras": "Top Cameras",
+    "top_lenses": "Top Lenses",
+    "less": "less",
+    "more": "more"
   },
   "format": {
     "year": "yyyy",

@@ -10,7 +10,8 @@
     "people": "Personen",
     "camera": "Kameras",
     "map": "Karte",
-    "settings": "Optionen"
+    "settings": "Optionen",
+    "dashboard": "Dashboard"
   },
   "album": {
     "all_files": "Alle Dateien",
@@ -311,7 +312,8 @@
       "person": "Keine Personen gefunden",
       "person_hint": "Indizieren Sie Gesichter in Alben, damit sie hier angezeigt werden",
       "camera": "Keine Kameras gefunden",
-      "camera_hint": "Fügen Sie Fotos mit Kameradaten hinzu, damit sie hier angezeigt werden"
+      "camera_hint": "Fügen Sie Fotos mit Kameradaten hinzu, damit sie hier angezeigt werden",
+      "data": "Keine Daten verfügbar"
     },
     "set_album_cover": {
       "success": "Cover gesetzt",
@@ -763,6 +765,19 @@
     "no_photos_in_view": "Keine Fotos in diesem Bereich",
     "photos_in_view": "{count} Fotos in diesem Bereich",
     "photos_in_view_limited": "Zeige die ersten {count} Fotos - zum Eingrenzen weiter zoomen"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "total_items": "Fotos & Videos",
+    "total_size": "Speicher",
+    "timeline": "Timeline",
+    "geo_heatmap": "Geo-Heatmap",
+    "formats": "Dateiformate",
+    "storage_by_album": "Speicher nach Album",
+    "top_cameras": "Top Kameras",
+    "top_lenses": "Top Objektive",
+    "less": "weniger",
+    "more": "mehr"
   },
   "format": {
     "year": "yyyy",

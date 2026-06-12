@@ -10,7 +10,8 @@
     "people": "人物",
     "camera": "相机",
     "map": "地图",
-    "settings": "设置"
+    "settings": "设置",
+    "dashboard": "仪表盘"
   },
   "album": {
     "all_files": "所有文件",
@@ -311,7 +312,8 @@
       "person": "未找到人物",
       "person_hint": "在相册中索引人脸后，会显示在这里",
       "camera": "未找到相机",
-      "camera_hint": "添加带相机元数据的照片后，会显示在这里"
+      "camera_hint": "添加带相机元数据的照片后，会显示在这里",
+      "data": "暂无数据"
     },
     "set_album_cover": {
       "success": "相册封面设置成功",
@@ -763,6 +765,19 @@
     "no_photos_in_view": "此区域内没有照片",
     "photos_in_view": "此区域内有 {count} 张照片",
     "photos_in_view_limited": "显示前 {count} 张照片 - 放大以查看更多"
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "total_items": "照片和视频",
+    "total_size": "存储空间",
+    "timeline": "时间线",
+    "geo_heatmap": "地理热力图",
+    "formats": "文件格式",
+    "storage_by_album": "相册存储占用",
+    "top_cameras": "常用相机",
+    "top_lenses": "常用镜头",
+    "less": "较少",
+    "more": "较多"
   },
   "format": {
     "year": "yyyy年",

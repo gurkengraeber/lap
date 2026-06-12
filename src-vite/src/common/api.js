@@ -1251,6 +1251,19 @@ export async function getGpsHeatmapPoints() {
   return [];
 }
 
+// get aggregated statistics for the dashboard view (year=0 for the most recent year with photos)
+export async function getDashboardStats(year = 0) {
+  try {
+    const stats = await invoke('get_dashboard_stats', { year });
+    if (stats) {
+      return stats;
+    }
+  } catch (error) {
+    console.error('Failed to get dashboard stats:', error);
+  }
+  return null;
+}
+
 // settings
 
 // get package info

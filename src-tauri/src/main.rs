@@ -303,6 +303,8 @@ async fn main() {
             // location
             t_cmds::get_location_info,
             t_cmds::get_gps_heatmap_points,
+            // dashboard
+            t_cmds::get_dashboard_stats,
             // settings
             t_cmds::get_package_info,
             t_cmds::get_build_time,

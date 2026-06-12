@@ -10,7 +10,8 @@
     "people": "인물",
     "camera": "카메라",
     "map": "지도",
-    "settings": "설정"
+    "settings": "설정",
+    "dashboard": "대시보드"
   },
   "album": {
     "all_files": "모든 파일",
@@ -311,7 +312,8 @@
       "person": "인물을 찾을 수 없습니다",
       "person_hint": "앨범에서 얼굴을 인덱싱하면 여기에서 인물을 볼 수 있습니다",
       "camera": "카메라를 찾을 수 없습니다",
-      "camera_hint": "카메라 메타데이터가 있는 사진을 추가하면 여기에 표시됩니다"
+      "camera_hint": "카메라 메타데이터가 있는 사진을 추가하면 여기에 표시됩니다",
+      "data": "데이터가 없습니다"
     },
     "set_album_cover": {
       "success": "앨범 커버 설정 완료",
@@ -763,6 +765,19 @@
     "no_photos_in_view": "이 영역에 사진이 없습니다",
     "photos_in_view": "이 영역에 사진 {count}장",
     "photos_in_view_limited": "처음 {count}장 표시 중 - 더 보려면 확대하세요"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "total_items": "사진 및 동영상",
+    "total_size": "저장 공간",
+    "timeline": "타임라인",
+    "geo_heatmap": "위치 히트맵",
+    "formats": "파일 형식",
+    "storage_by_album": "앨범별 저장 공간",
+    "top_cameras": "주요 카메라",
+    "top_lenses": "주요 렌즈",
+    "less": "적음",
+    "more": "많음"
   },
   "format": {
     "year": "yyyy년",

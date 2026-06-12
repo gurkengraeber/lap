@@ -10,7 +10,8 @@
     "people": "Pessoas",
     "camera": "Câmeras",
     "map": "Mapa",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "dashboard": "Painel"
   },
   "album": {
     "all_files": "Todos os arquivos",
@@ -311,7 +312,8 @@
       "person": "Nenhuma pessoa encontrada",
       "person_hint": "Indexe rostos em Álbuns para ver pessoas aqui",
       "camera": "Nenhuma câmera encontrada",
-      "camera_hint": "Adicione fotos com metadados da câmera para vê-las aqui"
+      "camera_hint": "Adicione fotos com metadados da câmera para vê-las aqui",
+      "data": "Sem dados disponíveis"
     },
     "set_album_cover": {
       "success": "Capa definida",
@@ -763,6 +765,19 @@
     "no_photos_in_view": "Nenhuma foto nesta área",
     "photos_in_view": "{count} fotos nesta área",
     "photos_in_view_limited": "Mostrando as primeiras {count} fotos - aproxime para mais"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "total_items": "Fotos e vídeos",
+    "total_size": "Armazenamento",
+    "timeline": "Linha do tempo",
+    "geo_heatmap": "Mapa de calor",
+    "formats": "Formatos de ficheiro",
+    "storage_by_album": "Armazenamento por álbum",
+    "top_cameras": "Principais câmeras",
+    "top_lenses": "Principais lentes",
+    "less": "menos",
+    "more": "mais"
   },
   "format": {
     "year": "yyyy",
